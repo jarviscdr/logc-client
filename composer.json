@@ -1,0 +1,25 @@
+{
+    "name": "jarviscdr/logc-client",
+    "description": "LogC的客户端:使用API|WS上报日志文件。",
+    "autoload": {
+        "psr-4": {
+            "Jarviscdr\\LogcClient\\": "src/"
+        },
+        "files": [
+            "./src/helpers.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "jarvis",
+            "email": "jarviscdr@outlook.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.8",
+        "textalk/websocket": "^1.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    }
+}
