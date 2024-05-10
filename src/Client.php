@@ -8,16 +8,6 @@ use WebSocket\Client as WsClient;
 class Client
 {
     /**
-     * 上报类型 WebSocket
-     */
-    public const REPORT_TYPE_WS = 'cli';
-
-    /**
-     * 上报类型 Api
-     */
-    public const REPORT_TYPE_API = 'fpm';
-
-    /**
      * API请求客户端
      *
      * @var \GuzzleHttp\Client

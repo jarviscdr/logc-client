@@ -15,8 +15,8 @@ class LogcTest extends TestCase
     {
         Client::getInstance()->setApiClient('http://127.0.0.1:10001', 1.0)->setProject('测试');
         Client::getInstance()->setThrowException(false);
-        // Client::getInstance()->report('订单请求异常', ['order'], 1, 'test', Client::REPORT_TYPE_API);
-        logc(['err' => -1, 'data' => '订单请求异常', 'oid' => 1234567890], 'order,alipay');
+        // Client::getInstance()->report('订单请求异常', ['order'], Constant::ERROR, 'test', Client::REPORT_TYPE_API);
+        logc(['err' => -1, 'data' => '订单请求异常', 'oid' => 1234567890], 'order,alipay', Constant::DEBUG);
         $this->assertTrue(true);
     }
 
