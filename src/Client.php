@@ -39,6 +39,13 @@ class Client
     private $project = '';
 
     /**
+     * 上报日志错误时是否抛出异常
+     *
+     * @var bool
+     */
+    private $throwException = true;
+
+    /**
      * 当前类的实例
      *
      * @var Client
@@ -94,11 +101,11 @@ class Client
      * @author Jarvis
      * @date   2024-02-25 13:07
      */
-    public function setApiClient($host)
+    public function setApiClient($host, $timeout = 2.0)
     {
         $this->apiClient = new HttpClient([
             'base_uri' => $host,
-            'timeout'  => 2.0,
+            'timeout'  => $timeout,
         ]);
         return $this;
     }
@@ -114,6 +121,20 @@ class Client
     public function setProject($project)
     {
         $this->project = $project;
+        return $this;
+    }
+
+    /**
+     * 设置是否抛出异常
+     *
+     * @param  bool $throwException
+     * @return self
+     * @author Jarvis
+     * @date   2024-05-10 22:40
+     */
+    public function setThrowException($throwException)
+    {
+        $this->throwException = $throwException;
         return $this;
     }
 
@@ -144,16 +165,30 @@ class Client
 
         $data = [
             'project' => $project ?: $this->project,
-            'type' => $type,
             'tags' => $tags,
-            'content' => $content,
+            'type' => $type,
             'time' => date('Y-m-d H:i:s'),
+            'content' => $content,
         ];
 
-        if ($clientType === 'cli') {
-            return $this->wsSend($data);
-        } else {
-            return $this->apiSend($data);
+        $exception = null;
+        try {
+            if ($clientType === 'cli') {
+                return $this->wsSend($data);
+            } else {
+                return $this->apiSend($data);
+            }
+        } catch (LogcReportException $e) {
+            // 自定义日志错误，无需进行转换
+            $exception = $e;
+        } catch (\Throwable $th) {
+            // 其他错误，需要转换为自定义日志错误
+            $exception = new LogcReportException('请求日志服务API失败:'.$th->getMessage());
+        }
+
+        // 判断是否需要抛出异常
+        if ($this->throwException && !empty($exception)) {
+            throw $exception;
         }
     }
 
