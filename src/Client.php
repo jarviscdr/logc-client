@@ -15,6 +15,13 @@ class Client
     private $apiClient;
 
     /**
+     * API请求Host
+     *
+     * @var string
+     */
+    private $apiHost = '';
+
+    /**
      * WebSocket客户端
      *
      * @var \WebSocket\Client
@@ -27,6 +34,13 @@ class Client
      * @var string
      */
     private $project = '';
+
+    /**
+     * 默认标签
+     *
+     * @var []string
+     */
+    private $tags = [];
 
     /**
      * 上报日志错误时是否抛出异常
@@ -93,8 +107,8 @@ class Client
      */
     public function setApiClient($host, $timeout = 2.0)
     {
+        $this->apiHost = $host;
         $this->apiClient = new HttpClient([
-            'base_uri' => $host,
             'timeout'  => $timeout,
         ]);
         return $this;
@@ -111,6 +125,20 @@ class Client
     public function setProject($project)
     {
         $this->project = $project;
+        return $this;
+    }
+
+    /**
+     * 设置默认标签
+     *
+     * @param  []string $tags
+     * @return self
+     * @author Jarvis
+     * @date   2024-05-13 11:41
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
         return $this;
     }
 
@@ -155,7 +183,7 @@ class Client
 
         $data = [
             'project' => $project ?: $this->project,
-            'tags' => $tags,
+            'tags' => $tags ?: $this->tags,
             'type' => $type,
             'time' => date('Y-m-d H:i:s'),
             'content' => $content,
@@ -196,7 +224,7 @@ class Client
             throw new LogcReportException('未配置API客户端');
         }
 
-        $response = $this->apiClient->post('/api/log/record', [
+        $response = $this->apiClient->post($this->apiHost.'/api/log/record', [
             'json' => $data,
         ]);
 
